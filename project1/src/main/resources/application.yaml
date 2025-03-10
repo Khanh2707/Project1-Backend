@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: "${DB_URL}"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  signedKey: "${JWT_SECRET}"
+  valid-duration: 3600
+  refreshable-duration: 36000
