@@ -20,6 +20,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -52,7 +54,8 @@ public class AuthenticationService {
         var account = accountRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.UN_AUTHENTICATED));
 
-        boolean authenticated = account.getPassword().equals(request.getPassword());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
 
         if (!authenticated) {
             throw new AppException(ErrorCode.UN_AUTHENTICATED);
