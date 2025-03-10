@@ -1,7 +1,6 @@
 package com.phuckhanh.project1.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,4 +19,5 @@ public class Account {
     String username;
     @Column(nullable = false)
     String password;
+    Integer age;
 }

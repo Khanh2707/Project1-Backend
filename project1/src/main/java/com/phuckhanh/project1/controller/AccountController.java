@@ -1,6 +1,7 @@
 package com.phuckhanh.project1.controller;
 
 import com.phuckhanh.project1.dto.request.AccountCreateRequest;
+import com.phuckhanh.project1.dto.request.AccountUpdateRequest;
 import com.phuckhanh.project1.dto.response.AccountResponse;
 import com.phuckhanh.project1.dto.response.ApiResponse;
 import com.phuckhanh.project1.service.AccountService;
@@ -18,10 +19,24 @@ public class AccountController {
     AccountService accountService;
 
     @GetMapping
-    public ApiResponse<AccountResponse> getAccountById(@RequestParam("id") String id) {
+    public ApiResponse<AccountResponse> getAccount(@RequestParam(value = "id", required = false) String id,
+                                                   @RequestParam(value = "username", required = false) String username) {
         ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
 
-        apiResponse.setResult(accountService.getAccountById(id));
+        if (id != null) {
+            apiResponse.setResult(accountService.getAccountById(id));
+        } else if (username != null) {
+            apiResponse.setResult(accountService.getAccountByUsername(username));
+        }
+
+        return apiResponse;
+    }
+
+    @GetMapping("/my-profile")
+    public ApiResponse<AccountResponse> getMyAccount() {
+        ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(accountService.getMyAccount());
 
         return apiResponse;
     }
@@ -31,6 +46,15 @@ public class AccountController {
         ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(accountService.createAccount(accountCreateRequest));
+
+        return apiResponse;
+    }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<AccountResponse> updateAccount(@PathVariable("id") String id, @RequestBody @Valid AccountUpdateRequest accountUpdateRequest) {
+        ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(accountService.updateAccount(id, accountUpdateRequest));
 
         return apiResponse;
     }

@@ -12,4 +12,5 @@ public class AccountResponse {
     String id;
     String username;
     String password;
+    Integer age;
 }
