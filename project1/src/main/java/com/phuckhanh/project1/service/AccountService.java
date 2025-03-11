@@ -28,6 +28,10 @@ public class AccountService {
 
     AccountMapper accountMapper;
 
+    public List<AccountResponse> getAllAccounts() {
+        return accountRepository.findAll().stream().map(accountMapper::toAccountResponse).toList();
+    }
+
     public AccountResponse getAccountById(String id) {
         return accountMapper.toAccountResponse(accountRepository.findById(id)
                         .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOTFOUND)));
@@ -70,5 +74,9 @@ public class AccountService {
         accountRepository.save(account);
 
         return accountMapper.toAccountResponse(account);
+    }
+
+    public void deleteAccount(String id) {
+        accountRepository.deleteById(id);
     }
 }

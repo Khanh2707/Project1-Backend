@@ -1,9 +1,12 @@
 package com.phuckhanh.project1.controller;
 
 import com.nimbusds.jose.JOSEException;
+import com.phuckhanh.project1.dto.request.IntrospectTokenRequest;
 import com.phuckhanh.project1.dto.request.LoginRequest;
 import com.phuckhanh.project1.dto.request.LogoutRequest;
+import com.phuckhanh.project1.dto.request.RefreshTokenRequest;
 import com.phuckhanh.project1.dto.response.ApiResponse;
+import com.phuckhanh.project1.dto.response.IntrospectTokenResponse;
 import com.phuckhanh.project1.dto.response.LoginResponse;
 import com.phuckhanh.project1.entity.Account;
 import com.phuckhanh.project1.service.AuthenticationService;
@@ -41,5 +44,27 @@ public class AuthenticationController {
         authenticationService.logout(logoutRequest);
 
         return new ApiResponse<>();
+    }
+
+    @PostMapping("/refreshToken")
+    public ApiResponse<LoginResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(refreshTokenRequest);
+
+        ApiResponse<LoginResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(result);
+
+        return apiResponse;
+    }
+
+    @PostMapping("/introspectToken")
+    public ApiResponse<IntrospectTokenResponse> refreshToken(@RequestBody IntrospectTokenRequest introspectTokenRequest) throws ParseException, JOSEException {
+        var result = authenticationService.introspectToken(introspectTokenRequest);
+
+        ApiResponse<IntrospectTokenResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(result);
+
+        return apiResponse;
     }
 }

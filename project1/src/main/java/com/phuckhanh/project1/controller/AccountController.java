@@ -11,12 +11,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
     AccountService accountService;
+
+    @GetMapping("/all")
+    public ApiResponse<List<AccountResponse>> getAllAccounts() {
+        ApiResponse<List<AccountResponse>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(accountService.getAllAccounts());
+
+        return apiResponse;
+    }
 
     @GetMapping
     public ApiResponse<AccountResponse> getAccount(@RequestParam(value = "id", required = false) String id,
@@ -57,5 +68,12 @@ public class AccountController {
         apiResponse.setResult(accountService.updateAccount(id, accountUpdateRequest));
 
         return apiResponse;
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteAccount(@PathVariable("id") String id) {
+        accountService.deleteAccount(id);
+
+        return new ApiResponse<>();
     }
 }

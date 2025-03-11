@@ -5,8 +5,11 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.phuckhanh.project1.dto.request.IntrospectTokenRequest;
 import com.phuckhanh.project1.dto.request.LoginRequest;
 import com.phuckhanh.project1.dto.request.LogoutRequest;
+import com.phuckhanh.project1.dto.request.RefreshTokenRequest;
+import com.phuckhanh.project1.dto.response.IntrospectTokenResponse;
 import com.phuckhanh.project1.dto.response.LoginResponse;
 import com.phuckhanh.project1.entity.Account;
 import com.phuckhanh.project1.entity.InvalidatedToken;
@@ -134,5 +137,38 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UN_AUTHENTICATED);
 
         return signedJWT;
+    }
+
+    public LoginResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
+        var signedJWT = verifyToken(request.getToken(), true);
+
+        var jit = signedJWT.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken =
+                InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signedJWT.getJWTClaimsSet().getSubject();
+
+        var user = accountRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UN_AUTHENTICATED));
+
+        var token = generateToken(user);
+
+        return LoginResponse.builder().token(token).authenticated(true).build();
+    }
+
+    public IntrospectTokenResponse introspectToken(IntrospectTokenRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+        boolean isValid = true;
+
+        try {
+            verifyToken(token, false);
+        } catch (AppException e) {
+            isValid = false;
+        }
+
+        return IntrospectTokenResponse.builder().valid(isValid).build();
     }
 }
